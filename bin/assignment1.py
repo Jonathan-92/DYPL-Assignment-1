@@ -1,3 +1,4 @@
+# -*- coding: cp1252 -*-
 import JythonTranslater
 
 class program(JythonTranslater.Jtrans):
@@ -8,23 +9,20 @@ class program(JythonTranslater.Jtrans):
 	pen_pos_y = 0.0
 	pen_angle = 0
 	
-	methods = {
-		"move"			: move,
-		"move backward" : moveBackward,
-		"move forward" 	: moveForward,
-		"pen down" 		: penDown,
-		"pen up" 		: penUp,
-		"turn cw" 		: turnCW,
-		"turn ccw"		: turnCCW,
-		"put"			: put,
-		"for"			: forLoop}
-		
-	eval(methods["move"] + "(steps, angle)") # move(steps, angle)
 	def actionPerformed(self, event):
 		str = self.dypl.getCode()
-		str = str.split("\n")
-		for line in str:
-			pass
+		stmts = str.split("\n")
+		for stmt in stmts:
+			if regex(stmt, penDown): # regex är en metod som kollar om item matchar regexet för penDown etc.
+                                penDown()
+                        elif regex(stmt, move):
+                                # tar bort ( och ) så bara argumenten blir kvar och lägger
+                                # in i move(...)
+                                eval("move({0})".format(stmt.strip("(").strip(")")))
+                        [...]
+                        elif [...]
+                        else:
+                             print "invalid input"   
 			
 	def forLoop(x, to, *stmts)
 		pass
