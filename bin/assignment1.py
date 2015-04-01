@@ -13,21 +13,45 @@ class program(JythonTranslater.Jtrans):
 		str = self.dypl.getCode()
 		stmts = str.split("\n")
 		for stmt in stmts:
+		
 			if self.regex(stmt, self.penDown): # regex är en metod som kollar om item matchar regexet för penDown etc.
 				self.penDown()
+				
+			elif self.regex(stmt, self.penUp):
+				self.penUp()
+			
+			elif self.regex(stmt, self.moveForward):
+				self.moveForward()
+			elif self.regex(stmt, self.moveBackward):
+				self.moveBackward()
+
 			elif self.regex(stmt, self.move):
-				# tar bort ( och ) så bara argumenten blir kvar och lägger
-				# in i move(...)
-				param = stmt[stmt.find("(")+1:stmt.rfind(")")]		#hämtar substrängen mellan parenteserna
+				param = self.getParamsAsString(stmt)			#hämtar substrängen mellan parenteserna
 				eval("self.move({0})".format(param))
-                 #       [...]
-                  #      elif [...]
-                   #     else:
-                    #         print "invalid input"   
+			
+			elif self.regex(stmt, self.turnCW):
+				param = self.getParamsAsString(stmt)
+				eval("self.turnCW({0})".format(param))
+
+			elif self.regex(stmt, self.turnCCW):
+				param = self.getParamsAsString(stmt)
+				eval("self.turnCCW({0})".format(param))
+
+			elif self.regex(stmt, self.put):
+				param = self.getParamsAsString(stmt)
+				eval("self.put({0})".format(param))
+
+			elif self.regex(stmt, self.forLoop):
+				pass
+
+			else print self.unknownCommand(stmt) 
 			
 	def forLoop(self, x, to, *stmts):
 		pass
-		
+	
+	def getParamsAsString(self, stmt):
+		return stmt[stmt.find("(")+1 : stmt.rfind(")")]		#returnerar substrängen mellan parenteserna
+	
 	def move(self, steps, angle):
 		pass
 		
