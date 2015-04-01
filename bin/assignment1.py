@@ -14,17 +14,19 @@ class program(JythonTranslater.Jtrans):
 		stmts = str.split("\n")
 		for stmt in stmts:
 			if regex(stmt, penDown): # regex är en metod som kollar om item matchar regexet för penDown etc.
-                                penDown()
-                        elif regex(stmt, move):
-                                # tar bort ( och ) så bara argumenten blir kvar och lägger
-                                # in i move(...)
-                                eval("move({0})".format(stmt.strip("(").strip(")")))
-                        [...]
-                        elif [...]
-                        else:
-                             print "invalid input"   
+				penDown()
+			elif regex(stmt, move):
+				# tar bort ( och ) så bara argumenten blir kvar och lägger
+				# in i move(...)
+				param = stmt[stmt.find("("):stmt.rfind(")")]
+				print param
+				#eval("move({0})".format(stmt.strip("(").strip(")")))
+                 #       [...]
+                  #      elif [...]
+                   #     else:
+                    #         print "invalid input"   
 			
-	def forLoop(x, to, *stmts)
+	def forLoop(x, to, *stmts):
 		pass
 		
 	def move(steps, angle):
