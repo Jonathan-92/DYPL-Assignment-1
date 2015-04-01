@@ -13,50 +13,52 @@ class program(JythonTranslater.Jtrans):
 		str = self.dypl.getCode()
 		stmts = str.split("\n")
 		for stmt in stmts:
-			if regex(stmt, penDown): # regex är en metod som kollar om item matchar regexet för penDown etc.
-				penDown()
-			elif regex(stmt, move):
+			if self.regex(stmt, self.penDown): # regex är en metod som kollar om item matchar regexet för penDown etc.
+				self.penDown()
+			elif self.regex(stmt, self.move):
 				# tar bort ( och ) så bara argumenten blir kvar och lägger
 				# in i move(...)
-				param = stmt[stmt.find("("):stmt.rfind(")")]
-				print param
-				#eval("move({0})".format(stmt.strip("(").strip(")")))
+				param = stmt[stmt.find("(")+1:stmt.rfind(")")]		#hämtar substrängen mellan parenteserna
+				eval("self.move({0})".format(param))
                  #       [...]
                   #      elif [...]
                    #     else:
                     #         print "invalid input"   
 			
-	def forLoop(x, to, *stmts):
+	def forLoop(self, x, to, *stmts):
 		pass
 		
-	def move(steps, angle):
+	def move(self, steps, angle):
 		pass
 		
-	def moveBackward():
+	def moveBackward(self):
 		pass
 		
-	def moveForward():
+	def moveForward(self):
 		pass
 	
-	def penDown():
+	def penDown(self):
 		pen_down = True
 	
-	def penUp():
+	def penUp(self):
 		pen_down = False
 			
-	def put(xpos, ypos, angle):
+	def put(self, xpos, ypos, angle):
 		pass
-		
+	
+	def regex(self, stmt, method):
+		return True
+	
 	def setDYPL( self, obj ):
 		self.dypl = obj
 	
-	def turnCW(angle):
+	def turnCW(self, angle):
 		pass
 		
-	def turnCCW(angle):
+	def turnCCW(self, angle):
 		pass
 		
-	def unknownCommand(str):
+	def unknownCommand(self, str):
 		print str, " is an unknown command"
 		
 if __name__ == '__main__':
