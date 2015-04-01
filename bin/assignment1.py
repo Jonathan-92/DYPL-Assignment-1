@@ -34,7 +34,7 @@ class program(JythonTranslater.Jtrans):
 				self.moveBackward()
 
 			elif self.regex(stmt, self.move):
-				param = self.getParamsAsString(stmt)			#hämtar substrängen mellan parenteserna
+				param = self.getParamsAsString(stmt)	
 				eval("self.move({0})".format(param))
 			
 			elif self.regex(stmt, self.turnCW):
@@ -50,20 +50,20 @@ class program(JythonTranslater.Jtrans):
 				eval("self.put({0})".format(param))
 
 			elif self.regex(stmt, self.forLoop):
-				params = stmt.split(\s*)		#delar upp headern för for-loopen
-				var_name = params[1]			#variabelnamnet hämtas
-				var = int(params[3])			#variabelns värde hämtas
-				target = int(params[6])			#målet på loopen hämtas
+				params = stmt.split(\s*)		#splits the header of the for-loop
+				var_name = params[1]			#gets the variable name 
+				var = int(params[3])			#gets the variable value				
+				target = int(params[6])			#gets target value
 				
 				try:
-					endOfLoop = stmts.index("end",index) #hämtar radnumret där loopen slutar
+					endOfLoop = stmts.index("end",index) #gets line number where loop finishes
 
 				except ValueError:
-					print "for-loop without 'end'"		#om det inte finns ett "end" så skickas ett felmeddelande och metoden avbryts
+					print "for-loop without 'end'"		#if there is'nt an "end" an error message appears and the method stops
 					break
 				
-				self.forLoop(var_name, var, target, stmts[index:endOfLoop] #alla rader mellan där vi står och "end" skickas
-				index = endOfLoop 										#vi ställer oss på index för "end"
+				self.forLoop(var_name, var, target, stmts[index:endOfLoop] #all rows between where we are and "end" is sent
+				index = endOfLoop 										#we move to the "end" statement
 			else:
 				print self.unknownCommand(stmt)
 			
@@ -72,13 +72,13 @@ class program(JythonTranslater.Jtrans):
 	def forLoop(self, var_name, value, to, *stmts):
 		new_statements = stmts[:]					#copies stmts
 		for index in xrange(value, to):				#executes all statements the requested # of times			
-			for index2 in xrange(len(stmts)):			#replaces all variables with a value
+			for index2 in xrange(len(stmts)):			#replaces variables with a value
 				new_statements[index2] = stmts[index2].replace(var_name, index)
 			
 			self.doStatements(new_statements)
 	
 	def getParamsAsString(self, stmt):
-		return stmt[stmt.find("(")+1 : stmt.rfind(")")]		#returnerar substrängen mellan parenteserna
+		return stmt[stmt.find("(")+1 : stmt.rfind(")")]		#returns the substring between the parantesis'
 	
 	def move(self, steps, angle):
 		pass
