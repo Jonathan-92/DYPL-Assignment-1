@@ -109,8 +109,8 @@ class program(JythonTranslater.Jtrans):
 		self.pen_angle += angle
 		if steps < 1: return
 		
-		delta_x = math.cos(math.radians(self.pen_angle))
-		delta_y = math.sin(math.radians(self.pen_angle))
+		delta_x = math.cos(math.radians(self.pen_angle-90))
+		delta_y = math.sin(math.radians(self.pen_angle-90))
 		
 		if self.penDown:
 			positions_x = map(lambda x: self.pen_pos_x + x * delta_x, range( 1, steps + 1))
