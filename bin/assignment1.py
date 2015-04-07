@@ -18,8 +18,8 @@ class program(JythonTranslater.Jtrans):
 	
 	pen_down = False
 	
-	pen_pos_x = 150
-	pen_pos_y = 150
+	pen_pos_x = 0
+	pen_pos_y = 0
 	pen_angle = 0
 		
 	def actionPerformed(self, event):
@@ -106,24 +106,28 @@ class program(JythonTranslater.Jtrans):
 		print "move end"
 		
 	def move(self, steps, angle):
-		delta_x = math.cos(math.radians(self.pen_angle + angle))
-		delta_y = math.sin(math.radians(self.pen_angle + angle))
+		self.pen_angle += angle
+		if steps < 1: return
+		
+		delta_x = math.cos(math.radians(self.pen_angle))
+		delta_y = math.sin(math.radians(self.pen_angle))
 		
 		if self.penDown:
-			positions_x = map(lambda x: self.pen_pos_x + x*delta_x, range(steps))
-			positions_y = map(lambda y: self.pen_pos_y + y*delta_y, range(steps))
+			positions_x = map(lambda x: self.pen_pos_x + x * delta_x, range( 1, steps + 1))
+			positions_y = map(lambda y: self.pen_pos_y + y * delta_y, range( 1, steps + 1))
 			
 			for i in xrange(steps):
-				self.dypl.setPixel(int(positions_x[i]), int(positions_y[i]))
+				self.dypl.setPixel( int(positions_x[i]), int(positions_y[i]) )
 			
 		self.pen_pos_x += steps * delta_x
 		self.pen_pos_y += steps * delta_y
-		self.pen_angle += angle
+		
 	def moveBackward(self):
-		pass
+		self.move(1, 180)
+		self.turnCW(180)
 		
 	def moveForward(self):
-		pass
+		self.move(1, 0)
 	
 	def penDown(self):
 		self.pen_down = True
@@ -150,16 +154,18 @@ class program(JythonTranslater.Jtrans):
 				D = D + (2*dy)
 				
 	def put(self, xpos, ypos, angle):
-		pass
+		self.pen_pos_x = xpos
+		self.pen_pos_y = ypos
+		self.pen_angle = angle		
 	
 	def setDYPL( self, obj ):
 		self.dypl = obj
 	
 	def turnCW(self, angle):
-		pass
+		self.pen_angle += angle
 		
 	def turnCCW(self, angle):
-		pass
+		self.pen_angle -= angle
 		
 	def unknownCommand(self, str):
 		print str, " is an unknown command"
