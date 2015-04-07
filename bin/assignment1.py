@@ -5,10 +5,10 @@ import math
 
 class program(JythonTranslater.Jtrans):
 	
-	REGEX_PEN_DOWN 		= "\s*pen down\s*\n"
-	REGEX_PEN_UP		= "\s*pen up\n"
-	REGEX_MOVE_FORWARD	= "\s*move forward\n"
-	REGEX_MOVE_BACKWARD	= "\s*move backward\n"
+	REGEX_PEN_DOWN 		= "\s*pen down\s*"
+	REGEX_PEN_UP		= "\s*pen up\s*"
+	REGEX_MOVE_FORWARD	= "\s*move forward\s*"
+	REGEX_MOVE_BACKWARD	= "\s*move backward\s*"
 	REGEX_MOVE			= "\s*move\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
 	REGEX_TURN_CW		= "\s*turn cw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
 	REGEX_TURN_CCW		= "\s*turn ccw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
@@ -17,8 +17,8 @@ class program(JythonTranslater.Jtrans):
 	
 	pen_down = False
 	
-	pen_pos_x = 0
-	pen_pos_y = 0
+	pen_pos_x = 150
+	pen_pos_y = 150
 	pen_angle = 0
 		
 	def actionPerformed(self, event):
@@ -30,7 +30,7 @@ class program(JythonTranslater.Jtrans):
 	
 		index = 0
 		while index < len(stmts):
-			stmt = stmts[index]
+			stmt = stmts[index].strip()
 			
 			if self.regex(stmt, self.REGEX_PEN_DOWN): # regex är en metod som kollar om item matchar regexet för penDown etc.
 				self.penDown()
@@ -74,7 +74,9 @@ class program(JythonTranslater.Jtrans):
 				
 				self.forLoop(var_name, var, target, stmts[index:endOfLoop]) #all rows between where we are and "end" is sent
 				index = endOfLoop 	#we move to the "end" statement
-				
+			
+			elif stmt == "":
+				pass
 			else:
 				self.unknownCommand(stmt)
 			
@@ -91,20 +93,36 @@ class program(JythonTranslater.Jtrans):
 	def getParamsAsString(self, stmt):
 		return stmt[stmt.find("(")+1 : stmt.rfind(")")]		#returns the substring between the parantesis'
 	
-	def move(self, steps, angle):
+	def move2(self, steps, angle):
 		print "move begin"
 		new_dir = self.pen_angle + angle
-		new_x = self.pen_pos_x + steps * math.sin(new_dir)
-		new_y = self.pen_pos_y + steps * math.cos(new_dir)
+		new_x = self.pen_pos_x + (steps * math.cos(math.radians(new_dir+90) ) )
+		new_y = self.pen_pos_y + (steps * math.sin(math.radians(new_dir+90) ) )
+		
+		print str(new_x) + " " + str(new_y)
 		
 		if self.pen_down:
-			plotLine(self.pen_pos_x, self.pen_pos_y, new_x, new_y)
+			self.plotLine(self.pen_pos_x, self.pen_pos_y, new_x, new_y)
 			
 		self.pen_pos_x = new_x
 		self.pen_pos_y = new_y
 		self.pen_angle = new_dir
 		print "move end"
 		
+	def move(self, steps, angle):
+		delta_x = math.cos(math.radians(self.pen_angle + angle))
+		delta_y = math.sin(math.radians(self.pen_angle + angle))
+		
+		if self.penDown:
+			positions_x = map(lambda x: self.pen_pos_x + x*delta_x, range(steps))
+			positions_y = map(lambda y: self.pen_pos_y + y*delta_y, range(steps))
+			
+			for i in xrange(steps):
+				self.dypl.setPixel(int(positions_x[i]), int(positions_y[i]))
+			
+		self.pen_pos_x += steps * delta_x
+		self.pen_pos_y += steps * delta_y
+		self.pen_angle += angle
 	def moveBackward(self):
 		pass
 		
@@ -112,26 +130,27 @@ class program(JythonTranslater.Jtrans):
 		pass
 	
 	def penDown(self):
-		pen_down = True
-	
+		self.pen_down = True
+		
 	def penUp(self):
-		pen_down = False
+		self.pen_down = False
 
-	def plotLine(x0,y0, x1,y1):
+	def plotLine(self, x0,y0, x1,y1):
+		print "plotLine ftw"
 		dx=x1-x0
 		dy=y1-y0
 
 		D = 2*dy - dx
-		DYPL.setPixel(x0,y0)
+		self.dypl.setPixel(x0,y0)
 		y=y0
 
-		for x in xrange(x0+1, x1):
+		for x in range(x0, x1):
 			if D > 0:
 				y = y+1
-				DYPL.setPixel(x,y)
+				self.dypl.setPixel(x,y)
 				D = D + (2*dy-2*dx)
 			else:
-				DYPL.setPixel(x,y)
+				self.dypl.setPixel(x,y)
 				D = D + (2*dy)
 				
 	def put(self, xpos, ypos, angle):
