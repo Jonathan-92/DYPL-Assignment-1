@@ -33,33 +33,33 @@ class program(JythonTranslater.Jtrans):
 		while index < len(stmts):
 			stmt = stmts[index].strip()
 			
-			if re.match(stmt, self.REGEX_PEN_DOWN):
+			if re.match(self.REGEX_PEN_DOWN, stmt):
 				self.penDown()
 				
-			elif re.match(stmt, self.REGEX_PEN_UP):
+			elif re.match(self.REGEX_PEN_UP, stmt):
 				self.penUp()
 			
-			elif re.match(stmt, self.REGEX_MOVE_FORWARD):
+			elif re.match(self.REGEX_MOVE_FORWARD, stmt):
 				self.moveForward()
 				
-			elif re.match(stmt, self.REGEX_MOVE_BACKWARD):
+			elif re.match(self.REGEX_MOVE_BACKWARD, stmt):
 				self.moveBackward()
 
-			elif re.match(stmt, self.REGEX_MOVE):
+			elif re.match(self.REGEX_MOVE, stmt):
 				eval("self."+stmt)
 			
-			elif re.match(stmt, self.REGEX_TURN_CW):
+			elif re.match(self.REGEX_TURN_CW, stmt):
 				s = re.split("turn cw",stmt)
 				eval("self.turnCW("+s[1]+")")
 
-			elif re.match(stmt, self.REGEX_TURN_CCW):
+			elif re.match(self.REGEX_TURN_CCW, stmt):
 				s = re.split("turn ccw",stmt)
 				eval("self.turnCW("+s[1]+")")
 
-			elif re.match(stmt, self.REGEX_PUT):
+			elif re.match(self.REGEX_PUT, stmt):
 				eval("self."+stmt)
 
-			elif re.match(stmt, self.REGEX_FOR):
+			elif re.match(self.REGEX_FOR, stmt):
 				params = stmt.split(" ")		#splits the header of the for-loop
 				var_name = params[1]			#gets the variable name 
 				var = int(params[3])			#gets the variable value				
