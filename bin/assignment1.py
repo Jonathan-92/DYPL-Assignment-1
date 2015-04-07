@@ -76,7 +76,7 @@ class program(JythonTranslater.Jtrans):
 				index = endOfLoop 	#we move to the "end" statement
 				
 			else:
-				print self.unknownCommand(stmt)
+				self.unknownCommand(stmt)
 			
 			index = index + 1
 	
@@ -150,7 +150,7 @@ class program(JythonTranslater.Jtrans):
 		pass
 		
 	def unknownCommand(self, str):
-		return str, " is an unknown command"
+		print str, " is an unknown command"
 		
 if __name__ == '__main__':
     import DYPL
