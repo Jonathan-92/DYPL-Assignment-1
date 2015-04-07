@@ -26,7 +26,7 @@ class program(JythonTranslater.Jtrans):
 		for line in str:
 			pass
 			
-	def forLoop(x, to, *stmts)
+	def forLoop(x, to, *stmts):
 		pass
 		
 	def move(steps, angle):
