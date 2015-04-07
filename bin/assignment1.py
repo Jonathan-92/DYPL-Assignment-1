@@ -5,7 +5,7 @@ import math
 
 class program(JythonTranslater.Jtrans):
 	
-	REGEX_PEN_DOWN 		= "\s*pen down\s*\n"
+	REGEX_PEN_DOWN 		= "\s*pen down\s*"
 	REGEX_PEN_UP		= "\s*pen up\n"
 	REGEX_MOVE_FORWARD	= "\s*move forward\n"
 	REGEX_MOVE_BACKWARD	= "\s*move backward\n"
@@ -32,36 +32,34 @@ class program(JythonTranslater.Jtrans):
 		while index < len(stmts):
 			stmt = stmts[index]
 			
-			if self.regex(stmt, self.REGEX_PEN_DOWN): # regex är en metod som kollar om item matchar regexet för penDown etc.
+			if re.match(stmt, self.REGEX_PEN_DOWN):
 				self.penDown()
 				
-			elif self.regex(stmt, self.REGEX_PEN_UP):
+			elif re.match(stmt, self.REGEX_PEN_UP):
 				self.penUp()
 			
-			elif self.regex(stmt, self.REGEX_MOVE_FORWARD):
+			elif re.match(stmt, self.REGEX_MOVE_FORWARD):
 				self.moveForward()
 				
-			elif self.regex(stmt, self.REGEX_MOVE_BACKWARD):
+			elif re.match(stmt, self.REGEX_MOVE_BACKWARD):
 				self.moveBackward()
 
-			elif self.regex(stmt, self.REGEX_MOVE):
-				param = self.getParamsAsString(stmt)	
-				eval("self.move("+param+")")
+			elif re.match(stmt, self.REGEX_MOVE):
+				eval("self."+stmt)
 			
-			elif self.regex(stmt, self.REGEX_TURN_CW):
-				param = self.getParamsAsString(stmt)
-				eval("self.turnCW("+param+")")
+			elif re.match(stmt, self.REGEX_TURN_CW):
+				s = re.split("turn cw",stmt)
+				eval("self.turnCW("+s[1]+")")
 
-			elif self.regex(stmt, self.REGEX_TURN_CCW):
-				param = self.getParamsAsString(stmt)
-				eval("self.turnCCW("+param+")")
+			elif re.match(stmt, self.REGEX_TURN_CCW):
+				s = re.split("turn ccw",stmt)
+				eval("self.turnCW("+s[1]+")")
 
-			elif self.regex(stmt, self.REGEX_PUT):
-				param = self.getParamsAsString(stmt)
-				eval("self.put("+param+")")
+			elif re.match(stmt, self.REGEX_PUT):
+				eval("self."+stmt)
 
-			elif self.regex(stmt, self.REGEX_FOR):
-				params = stmt.split("\s*")		#splits the header of the for-loop
+			elif re.match(stmt, self.REGEX_FOR):
+				params = stmt.split(" ")		#splits the header of the for-loop
 				var_name = params[1]			#gets the variable name 
 				var = int(params[3])			#gets the variable value				
 				target = int(params[6])			#gets target value
@@ -87,9 +85,6 @@ class program(JythonTranslater.Jtrans):
 				new_statements[index2] = stmts[index2].replace(var_name, index)
 			
 			self.doStatements(new_statements)
-	
-	def getParamsAsString(self, stmt):
-		return stmt[stmt.find("(")+1 : stmt.rfind(")")]		#returns the substring between the parantesis'
 	
 	def move(self, steps, angle):
 		print "move begin"
@@ -136,9 +131,6 @@ class program(JythonTranslater.Jtrans):
 				
 	def put(self, xpos, ypos, angle):
 		pass
-	
-	def regex(self, stmt, method):
-		return re.match(method, stmt)
 	
 	def setDYPL( self, obj ):
 		self.dypl = obj
