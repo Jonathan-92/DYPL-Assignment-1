@@ -10,11 +10,11 @@ class program(JythonTranslater.Jtrans):
 	REGEX_PEN_UP		= "\s*pen up\s*"
 	REGEX_MOVE_FORWARD	= "\s*move forward\s*"
 	REGEX_MOVE_BACKWARD	= "\s*move backward\s*"
-	REGEX_MOVE			= "\s*move\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
+	REGEX_MOVE		= "\s*move\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
 	REGEX_TURN_CW		= "\s*turn cw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
 	REGEX_TURN_CCW		= "\s*turn ccw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
-	REGEX_PUT			= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*"
-	REGEX_FOR = "\s*for\s[a-zA-Z]+\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo\s*"
+	REGEX_PUT		= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*"
+	REGEX_FOR               = "\s*for\s[a-zA-Z]+\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo\s*"
 	
 	pen_down = False
 	
@@ -75,7 +75,7 @@ class program(JythonTranslater.Jtrans):
 			elif stmt == "":
 				pass
 			else:
-				self.unknownCommand(stmt)
+				print stmt, " is an unknown command"
 			
 			index = index + 1
 	
@@ -93,22 +93,6 @@ class program(JythonTranslater.Jtrans):
 			self.doStatements(new_statements)
 		return stmtCount
 	
-	def move2(self, steps, angle):
-		print "move begin"
-		new_dir = self.pen_angle + angle
-		new_x = self.pen_pos_x + (steps * math.cos(math.radians(new_dir+90) ) )
-		new_y = self.pen_pos_y + (steps * math.sin(math.radians(new_dir+90) ) )
-		
-		print str(new_x) + " " + str(new_y)
-		
-		if self.pen_down:
-			self.plotLine(self.pen_pos_x, self.pen_pos_y, new_x, new_y)
-			
-		self.pen_pos_x = new_x
-		self.pen_pos_y = new_y
-		self.pen_angle = new_dir
-		print "move end"
-		
 	def move(self, steps, angle):
 		self.pen_angle += angle
 		if steps < 1: return
@@ -139,24 +123,6 @@ class program(JythonTranslater.Jtrans):
 	def penUp(self):
 		self.pen_down = False
 
-	def plotLine(self, x0,y0, x1,y1):
-		print "plotLine ftw"
-		dx=x1-x0
-		dy=y1-y0
-
-		D = 2*dy - dx
-		self.dypl.setPixel(x0,y0)
-		y=y0
-
-		for x in range(x0, x1):
-			if D > 0:
-				y = y+1
-				self.dypl.setPixel(x,y)
-				D = D + (2*dy-2*dx)
-			else:
-				self.dypl.setPixel(x,y)
-				D = D + (2*dy)
-				
 	def put(self, xpos, ypos, angle):
 		self.pen_pos_x = xpos
 		self.pen_pos_y = ypos
@@ -170,9 +136,6 @@ class program(JythonTranslater.Jtrans):
 		
 	def turnCCW(self, angle):
 		self.pen_angle -= angle
-		
-	def unknownCommand(self, str):
-		print str, " is an unknown command"
 		
 if __name__ == '__main__':
     import DYPL
