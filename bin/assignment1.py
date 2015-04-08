@@ -21,11 +21,12 @@ class program(JythonTranslater.Jtrans):
 	pen_pos_x = 0
 	pen_pos_y = 0
 	pen_angle = 0
+
+	setPixels = []
 		
 	def actionPerformed(self, event):
-                for i in range(0, 301):
-                        for j in range(0, 301):
-                                self.dypl.unsetPixel(i, j)
+                for e in self.setPixels:
+                        self.dypl.unsetPixel(*e)
 		str = self.dypl.getCode()
 		stmts = str.split("\n") 
 		self.doStatements(stmts)
@@ -68,7 +69,6 @@ class program(JythonTranslater.Jtrans):
 				var = int(params[3])			#gets the variable value
 				target = int(params[5])			#gets target value
 
-				#all rows between where we are and "end" is sent
 				stmtCount = self.forLoop(var_name, var, target, stmts[index + 1:]) 
 				index += stmtCount 	#we move to the "end" statement
 			
@@ -105,7 +105,10 @@ class program(JythonTranslater.Jtrans):
 			positions_y = map(lambda y: self.pen_pos_y + y * delta_y, range( 1, steps + 1))
 			
 			for i in xrange(steps):
-				self.dypl.setPixel( int(positions_x[i]), int(positions_y[i]) )
+                                x = int(positions_x[i])
+                                y = int(positions_y[i])
+				self.dypl.setPixel(x, y)
+				self.setPixels.append((x, y))
 			
 		self.pen_pos_x += steps * delta_x
 		self.pen_pos_y += steps * delta_y
