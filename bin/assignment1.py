@@ -70,7 +70,7 @@ class program(JythonTranslater.Jtrans):
 				target = int(params[5])			#gets target value
 
 				stmtCount = self.forLoop(var_name, var, target, stmts[index + 1:]) 
-				index += stmtCount 	#we move to the "end" statement
+				index += stmtCount 	# move stmtCount lines down to get past the end of the loop
 			
 			elif stmt == "":
 				pass
@@ -80,10 +80,10 @@ class program(JythonTranslater.Jtrans):
 			index = index + 1
 	
 	def forLoop(self, var_name, value, to, stmts):
-		stmtCount = 0
+		stmtCount = 0   # this will be returned to know how many statements were included in the loop
 		for index in xrange(value, to):		#executes all statements the requested # of times			
                         new_statements = []			#to be sent to doStatements
-                        stmtCount = 0
+                        stmtCount = 0   # reset
 			for stmt in stmts:			
                                 stmtCount += 1
                                 if stmt == "end":
