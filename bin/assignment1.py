@@ -13,8 +13,8 @@ class program(JythonTranslater.Jtrans):
 	REGEX_MOVE			= "\s*move\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
 	REGEX_TURN_CW		= "\s*turn cw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
 	REGEX_TURN_CCW		= "\s*turn ccw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
-	REGEX_PUT			= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
-	REGEX_FOR = "for\s[a-z]\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo"
+	REGEX_PUT			= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*"
+	REGEX_FOR = "\s*for\s[a-zA-Z]+\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo\s*"
 	
 	pen_down = False
 	
@@ -34,37 +34,29 @@ class program(JythonTranslater.Jtrans):
 			stmt = stmts[index].strip()
 			
 			if re.match(self.REGEX_PEN_DOWN, stmt):
-                                print stmt
 				self.penDown()
 				
 			elif re.match(self.REGEX_PEN_UP, stmt):
-                                print stmt
 				self.penUp()
 			
 			elif re.match(self.REGEX_MOVE_FORWARD, stmt):
-                                print stmt
 				self.moveForward()
 				
 			elif re.match(self.REGEX_MOVE_BACKWARD, stmt):
-                                print stmt
 				self.moveBackward()
 
 			elif re.match(self.REGEX_MOVE, stmt):
-                                print stmt
 				eval("self."+stmt)
 			
 			elif re.match(self.REGEX_TURN_CW, stmt):
-                                print stmt
 				s = re.split("turn cw",stmt)
 				eval("self.turnCW("+s[1]+")")
 
 			elif re.match(self.REGEX_TURN_CCW, stmt):
-                                print stmt
 				s = re.split("turn ccw",stmt)
 				eval("self.turnCW("+s[1]+")")
 
 			elif re.match(self.REGEX_PUT, stmt):
-                                print stmt
 				eval("self."+stmt)
 
 			elif re.match(self.REGEX_FOR, stmt):
