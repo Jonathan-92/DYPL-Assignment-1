@@ -60,19 +60,16 @@ class program(JythonTranslater.Jtrans):
 				eval("self."+stmt)
 
 			elif re.match(self.REGEX_FOR, stmt):
-				params = stmt.split(" ")		#splits the header of the for-loop
+				params = re.split("\s*", stmt)		#splits the header of the for-loop
 				var_name = params[1]			#gets the variable name 
-				var = int(params[3])			#gets the variable value				
-				target = int(params[6])			#gets target value
+				var = int(params[3])			#gets the variable value
+				print params
+				target = int(params[5])			#gets target value
 				
-				endOfLoop = stmts.find("end",index) #gets line number where loop finishes
-
-				if endOfLoop < 0:
-					print "for-loop without 'end'"		#if there is'nt an "end" an error message appears and the method stops
-					break
 				
-				self.forLoop(var_name, var, target, stmts[index:endOfLoop]) #all rows between where we are and "end" is sent
-				index = endOfLoop 	#we move to the "end" statement
+				
+				self.forLoop(var_name, var, target, stmts[index:]) #all rows between where we are and "end" is sent
+				index = 4 	#we move to the "end" statement
 			
 			elif stmt == "":
 				pass
@@ -81,10 +78,12 @@ class program(JythonTranslater.Jtrans):
 			
 			index = index + 1
 	
-	def forLoop(self, var_name, value, to, *stmts):
+	def forLoop(self, var_name, value, to, stmts):
 		new_statements = []							#to be sent to doStatements
 		for index in xrange(value, to):				#executes all statements the requested # of times			
 			for index2 in xrange(len(stmts)):			#replaces variables with a value
+                                if stmts[index2] == "end":
+                                        break
 				new_statements[index2] = stmts[index2].replace(var_name, index)
 			
 			self.doStatements(new_statements)
