@@ -23,6 +23,9 @@ class program(JythonTranslater.Jtrans):
 	pen_angle = 0
 		
 	def actionPerformed(self, event):
+                for i in range(0, 301):
+                        for j in range(0, 301):
+                                self.dypl.unsetPixel(i, j)
 		str = self.dypl.getCode()
 		stmts = str.split("\n") 
 		self.doStatements(stmts)
@@ -60,7 +63,6 @@ class program(JythonTranslater.Jtrans):
 				eval("self."+stmt)
 
 			elif re.match(self.REGEX_FOR, stmt):
-                                print stmt
 				params = re.split("\s*", stmt)		#splits the header of the for-loop
 				var_name = params[1]			#gets the variable name 
 				var = int(params[3])			#gets the variable value
