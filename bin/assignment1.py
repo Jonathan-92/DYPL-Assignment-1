@@ -14,7 +14,7 @@ class program(JythonTranslater.Jtrans):
 	REGEX_TURN_CW		= "\s*turn cw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
 	REGEX_TURN_CCW		= "\s*turn ccw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
 	REGEX_PUT			= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
-	REGEX_FOR = "\s*for\s\w*\s*=\s*\d*\s*to\s*\d*\s*do"
+	REGEX_FOR = "for\s[a-z]\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo"
 	
 	pen_down = False
 	
@@ -34,42 +34,49 @@ class program(JythonTranslater.Jtrans):
 			stmt = stmts[index].strip()
 			
 			if re.match(self.REGEX_PEN_DOWN, stmt):
+                                print stmt
 				self.penDown()
 				
 			elif re.match(self.REGEX_PEN_UP, stmt):
+                                print stmt
 				self.penUp()
 			
 			elif re.match(self.REGEX_MOVE_FORWARD, stmt):
+                                print stmt
 				self.moveForward()
 				
 			elif re.match(self.REGEX_MOVE_BACKWARD, stmt):
+                                print stmt
 				self.moveBackward()
 
 			elif re.match(self.REGEX_MOVE, stmt):
+                                print stmt
 				eval("self."+stmt)
 			
 			elif re.match(self.REGEX_TURN_CW, stmt):
+                                print stmt
 				s = re.split("turn cw",stmt)
 				eval("self.turnCW("+s[1]+")")
 
 			elif re.match(self.REGEX_TURN_CCW, stmt):
+                                print stmt
 				s = re.split("turn ccw",stmt)
 				eval("self.turnCW("+s[1]+")")
 
 			elif re.match(self.REGEX_PUT, stmt):
+                                print stmt
 				eval("self."+stmt)
 
 			elif re.match(self.REGEX_FOR, stmt):
+                                print stmt
 				params = re.split("\s*", stmt)		#splits the header of the for-loop
 				var_name = params[1]			#gets the variable name 
 				var = int(params[3])			#gets the variable value
-				print params
 				target = int(params[5])			#gets target value
-				
-				
-				
-				self.forLoop(var_name, var, target, stmts[index:]) #all rows between where we are and "end" is sent
-				index = 4 	#we move to the "end" statement
+
+				#all rows between where we are and "end" is sent
+				stmtCount = self.forLoop(var_name, var, target, stmts[index + 1:]) 
+				index += stmtCount 	#we move to the "end" statement
 			
 			elif stmt == "":
 				pass
@@ -79,14 +86,18 @@ class program(JythonTranslater.Jtrans):
 			index = index + 1
 	
 	def forLoop(self, var_name, value, to, stmts):
-		new_statements = []							#to be sent to doStatements
-		for index in xrange(value, to):				#executes all statements the requested # of times			
-			for index2 in xrange(len(stmts)):			#replaces variables with a value
-                                if stmts[index2] == "end":
+		stmtCount = 0
+		for index in xrange(value, to):		#executes all statements the requested # of times			
+                        new_statements = []			#to be sent to doStatements
+                        stmtCount = 0
+			for stmt in stmts:			
+                                stmtCount += 1
+                                if stmt == "end":
                                         break
-				new_statements[index2] = stmts[index2].replace(var_name, index)
-			
+                                #replaces variables with a value
+				new_statements.append(stmt.replace(var_name, str(index)))
 			self.doStatements(new_statements)
+		return stmtCount
 	
 	def move2(self, steps, angle):
 		print "move begin"
