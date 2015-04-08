@@ -5,16 +5,16 @@ import math
 
 class program(JythonTranslater.Jtrans):
 	
-	REGEX_PEN_DOWN 		= "\s*pen down\s*"
+	REGEX_PEN_DOWN 		= "\s*pen down\s$"
 
-	REGEX_PEN_UP		= "\s*pen up\s*"
-	REGEX_MOVE_FORWARD	= "\s*move forward\s*"
-	REGEX_MOVE_BACKWARD	= "\s*move backward\s*"
-	REGEX_MOVE		= "\s*move\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
-	REGEX_TURN_CW		= "\s*turn cw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
-	REGEX_TURN_CCW		= "\s*turn ccw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)"
-	REGEX_PUT		= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*"
-	REGEX_FOR               = "\s*for\s[a-zA-Z]+\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo\s*"
+	REGEX_PEN_UP		= "\s*pen up\s*$"
+	REGEX_MOVE_FORWARD	= "\s*move forward\s*$"
+	REGEX_MOVE_BACKWARD	= "\s*move backward\s*$"
+	REGEX_MOVE		= "\s*move\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
+	REGEX_TURN_CW		= "\s*turn cw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
+	REGEX_TURN_CCW		= "\s*turn ccw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
+	REGEX_PUT		= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
+	REGEX_FOR               = "\s*for\s[a-zA-Z]+\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo\s*$"
 	
 	pen_down = False
 	
@@ -76,6 +76,7 @@ class program(JythonTranslater.Jtrans):
 				pass
 			else:
 				print stmt, " is an unknown command"
+				return
 			
 			index = index + 1
 	
