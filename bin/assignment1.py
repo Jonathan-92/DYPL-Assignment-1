@@ -65,13 +65,13 @@ class program(JythonTranslater.Jtrans):
 			elif re.match(self.REGEX_FOR, stmt):
 				#gets the variable name
 				var_name = re.search("[a-zA-Z]\s*=", stmt).group().strip(" =")
-				print var_name
+
                                 #gets the variable value
 				var_value = int(re.search("=\s*(0|([1-9]\d*))", stmt).group().strip("= "))
-				print var_value
+				
                                 #gets target value
 				target = int(re.search("to\s*(0|([1-9]\d*))", stmt).group().strip("to "))
-				print target
+				
 				stmtCount = self.forLoop(var_name, var_value, target, stmts[index + 1:]) 
 				index += stmtCount 	# move stmtCount lines down to get past the end of the loop
 			
