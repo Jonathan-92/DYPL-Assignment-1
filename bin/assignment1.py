@@ -5,7 +5,7 @@ import math
 
 class program(JythonTranslater.Jtrans):
 	
-	REGEX_PEN_DOWN 		= "\s*pen down\s$"
+	REGEX_PEN_DOWN 		= "\s*pen down\s*$"
 
 	REGEX_PEN_UP		= "\s*pen up\s*$"
 	REGEX_MOVE_FORWARD	= "\s*move forward\s*$"
@@ -17,7 +17,7 @@ class program(JythonTranslater.Jtrans):
 	REGEX_FOR               = "\s*for\s[a-zA-Z]+\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo\s*$"
 	
 	pen_down = False
-	
+
 	pen_pos_x = 0
 	pen_pos_y = 0
 	pen_angle = 0
@@ -25,8 +25,7 @@ class program(JythonTranslater.Jtrans):
 	setPixels = []
 		
 	def actionPerformed(self, event):
-                for e in self.setPixels:
-                        self.dypl.unsetPixel(*e)
+		self.reset()
 		str = self.dypl.getCode()
 		stmts = str.split("\n") 
 		self.doStatements(stmts)
@@ -101,13 +100,13 @@ class program(JythonTranslater.Jtrans):
 		delta_x = math.cos(math.radians(self.pen_angle-90))
 		delta_y = math.sin(math.radians(self.pen_angle-90))
 		
-		if self.penDown:
-			positions_x = map(lambda x: self.pen_pos_x + x * delta_x, range( 1, steps + 1))
-			positions_y = map(lambda y: self.pen_pos_y + y * delta_y, range( 1, steps + 1))
+		if self.pen_down:
+			positions_x = map(lambda x: self.pen_pos_x + x * delta_x, range(steps))
+			positions_y = map(lambda y: self.pen_pos_y + y * delta_y, range(steps))
 			
 			for i in xrange(steps):
-                                x = int(positions_x[i])
-                                y = int(positions_y[i])
+				x = int(positions_x[i])
+				y = int(positions_y[i])
 				self.dypl.setPixel(x, y)
 				self.setPixels.append((x, y))
 			
@@ -131,6 +130,11 @@ class program(JythonTranslater.Jtrans):
 		self.pen_pos_x = xpos
 		self.pen_pos_y = ypos
 		self.pen_angle = angle		
+	
+	def reset(self):
+		for e in self.setPixels:
+			self.dypl.unsetPixel(*e)
+		self.pen_pos_x = self.pen_pos_y = self.pen_angle = 0
 	
 	def setDYPL( self, obj ):
 		self.dypl = obj
