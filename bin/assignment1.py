@@ -14,9 +14,9 @@ class program(JythonTranslater.Jtrans):
 	REGEX_TURN_CW		= "\s*turn cw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
 	REGEX_TURN_CCW		= "\s*turn ccw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
 	REGEX_PUT		= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
-	REGEX_FOR               = "\s*for\s[a-zA-Z]+\s=\s(0|([1-9]\d*))\sto\s(0|([1-9]\d*))\sdo\s*$"
+	REGEX_FOR               = "\s*for\s+[a-zA-Z]+\s*=\s*(0|([1-9]\d*))\s+to\s+(0|([1-9]\d*))\s+do\s*$"
 	
-	pen_down = False
+	pen_down = True
 
 	pen_pos_x = 0
 	pen_pos_y = 0
@@ -63,12 +63,16 @@ class program(JythonTranslater.Jtrans):
 				eval("self."+stmt)
 
 			elif re.match(self.REGEX_FOR, stmt):
-				params = re.split("\s*", stmt)		#splits the header of the for-loop
-				var_name = params[1]			#gets the variable name 
-				var = int(params[3])			#gets the variable value
-				target = int(params[5])			#gets target value
-
-				stmtCount = self.forLoop(var_name, var, target, stmts[index + 1:]) 
+				#gets the variable name
+				var_name = re.search("[a-zA-Z]\s*=", stmt).group().strip(" =")
+				print var_name
+                                #gets the variable value
+				var_value = int(re.search("=\s*(0|([1-9]\d*))", stmt).group().strip("= "))
+				print var_value
+                                #gets target value
+				target = int(re.search("to\s*(0|([1-9]\d*))", stmt).group().strip("to "))
+				print target
+				stmtCount = self.forLoop(var_name, var_value, target, stmts[index + 1:]) 
 				index += stmtCount 	# move stmtCount lines down to get past the end of the loop
 			
 			elif stmt == "":
