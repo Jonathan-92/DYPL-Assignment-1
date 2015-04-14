@@ -57,14 +57,14 @@ class program(JythonTranslater.Jtrans):
 
 			elif re.match(self.REGEX_TURN_CCW, stmt):
 				s = re.split("turn ccw",stmt)
-				eval("self.turnCW("+s[1]+")")
+				eval("self.turnCCW("+s[1]+")")
 
 			elif re.match(self.REGEX_PUT, stmt):
 				eval("self."+stmt)
 
 			elif re.match(self.REGEX_FOR, stmt):
 				#gets the variable name
-				var_name = re.search("[a-zA-Z]\s*=", stmt).group().strip(" =")
+				var_name = re.search("[a-zA-Z]+\s*=", stmt).group().strip(" =")
 
                                 #gets the variable value
 				var_value = int(re.search("=\s*(0|([1-9]\d*))", stmt).group().strip("= "))
