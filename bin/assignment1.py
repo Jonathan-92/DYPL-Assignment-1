@@ -6,15 +6,14 @@ import math
 class program(JythonTranslater.Jtrans):
 	
 	REGEX_PEN_DOWN 		= "\s*pen down\s*$"
-
 	REGEX_PEN_UP		= "\s*pen up\s*$"
 	REGEX_MOVE_FORWARD	= "\s*move forward\s*$"
 	REGEX_MOVE_BACKWARD	= "\s*move backward\s*$"
-	REGEX_MOVE		= "\s*move\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
+	REGEX_MOVE			= "\s*move\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
 	REGEX_TURN_CW		= "\s*turn cw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
 	REGEX_TURN_CCW		= "\s*turn ccw\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
-	REGEX_PUT		= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
-	REGEX_FOR               = "\s*for\s+[a-zA-Z]+\s*=\s*(0|([1-9]\d*))\s+to\s+(0|([1-9]\d*))\s+do\s*$"
+	REGEX_PUT			= "\s*put\(\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*,\s*((0|([1-9]\d*))|[a-z])(\s*[+\-*]\s*((0|([1-9]\d*))|[a-z]))*\s*\)\s*$"
+	REGEX_FOR			= "\s*for\s+[a-zA-Z]+\s*=\s*(0|([1-9]\d*))\s+to\s+(0|([1-9]\d*))\s+do\s*$"
 	
 	pen_down = True
 
@@ -26,13 +25,13 @@ class program(JythonTranslater.Jtrans):
 		
 	def actionPerformed(self, event):
 		self.reset()
-		str = self.dypl.getCode()
-		stmts = str.split("\n") 
+		code = self.dypl.getCode()
+		stmts = code.split("\n") 
 		self.doStatements(stmts)
 	
 	def doStatements(self, stmts):
-	
 		index = 0
+		
 		while index < len(stmts):
 			stmt = stmts[index].strip()
 			
@@ -52,24 +51,24 @@ class program(JythonTranslater.Jtrans):
 				eval("self."+stmt)
 			
 			elif re.match(self.REGEX_TURN_CW, stmt):
-				s = re.split("turn cw",stmt)
-				eval("self.turnCW("+s[1]+")")
+				s = re.split("turn cw", stmt)
+				eval("self.turnCW(" + s[1] + ")")
 
 			elif re.match(self.REGEX_TURN_CCW, stmt):
-				s = re.split("turn ccw",stmt)
-				eval("self.turnCCW("+s[1]+")")
+				s = re.split("turn ccw", stmt)
+				eval("self.turnCCW(" + s[1] + ")")
 
 			elif re.match(self.REGEX_PUT, stmt):
-				eval("self."+stmt)
+				eval("self." + stmt)
 
 			elif re.match(self.REGEX_FOR, stmt):
 				#gets the variable name
 				var_name = re.search("[a-zA-Z]+\s*=", stmt).group().strip(" =")
 
-                                #gets the variable value
+				#gets the variable value
 				var_value = int(re.search("=\s*(0|([1-9]\d*))", stmt).group().strip("= "))
 				
-                                #gets target value
+				#gets target value
 				target = int(re.search("to\s*(0|([1-9]\d*))", stmt).group().strip("to "))
 				
 				stmtCount = self.forLoop(var_name, var_value, target, stmts[index + 1:]) 
@@ -84,21 +83,30 @@ class program(JythonTranslater.Jtrans):
 			index = index + 1
 	
 	def forLoop(self, var_name, value, to, stmts):
-		stmtCount = 0   # this will be returned to know how many statements were included in the loop
-		for index in xrange(value, to):		#executes all statements the requested # of times			
-                        new_statements = []			#to be sent to doStatements
-                        stmtCount = 0   # reset
-			for stmt in stmts:			
-                                stmtCount += 1
-                                if stmt == "end":
-                                        break
-                                #replaces variables with a value
+		# this will be returned to know how many statements were included in the loop
+		stmtCount = 0
+		
+		#executes all statements the requested # of times
+		for index in xrange(value, to):			
+			new_statements = []		#to be sent to doStatements
+			stmtCount = 0  			# reset because it's the inner for loop that will do the counting
+			
+			for stmt in stmts:
+				stmtCount += 1
+				
+				if stmt == "end":
+					break
+				
+				#replaces variables with a value
 				new_statements.append(stmt.replace(var_name, str(index)))
+				
 			self.doStatements(new_statements)
+			
 		return stmtCount
 	
 	def move(self, steps, angle):
 		self.pen_angle += angle
+		
 		if steps < 1: return
 		
 		delta_x = math.cos(math.radians(self.pen_angle-90))
@@ -138,6 +146,7 @@ class program(JythonTranslater.Jtrans):
 	def reset(self):
 		for e in self.setPixels:
 			self.dypl.unsetPixel(*e)
+			
 		self.pen_pos_x = self.pen_pos_y = self.pen_angle = 0
 	
 	def setDYPL( self, obj ):
