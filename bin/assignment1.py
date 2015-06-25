@@ -35,61 +35,48 @@ class program(JythonTranslater.Jtrans):
 		while index < len(stmts):
 			stmt = stmts[index].strip()
 			
-			if re.match(self.REGEX_PEN_DOWN, stmt):
-				self.penDown()
-				
-			elif re.match(self.REGEX_PEN_UP, stmt):
-				self.penUp()
+			# the default number of statements that is evaluated is one per iteration in the while loop, 
+			# but a for loop can consist of several statements, so this variable will be used to count 
+			# how many, so that we can skip those statements in the next iteration when the for loop has ended.
+			stmtCount = 1	
 			
-			elif re.match(self.REGEX_MOVE_FORWARD, stmt):
-				self.moveForward()
-				
-			elif re.match(self.REGEX_MOVE_BACKWARD, stmt):
-				self.moveBackward()
-
-			elif re.match(self.REGEX_MOVE, stmt):
-				eval("self."+stmt)
-			
-			elif re.match(self.REGEX_TURN_CW, stmt):
-				s = re.split("turn cw", stmt)
-				eval("self.turnCW(" + s[1] + ")")
-
-			elif re.match(self.REGEX_TURN_CCW, stmt):
-				s = re.split("turn ccw", stmt)
-				eval("self.turnCCW(" + s[1] + ")")
-
-			elif re.match(self.REGEX_PUT, stmt):
-				eval("self." + stmt)
-
-			elif re.match(self.REGEX_FOR, stmt):
-				#gets the variable name
-				var_name = re.search("[a-zA-Z]+\s*=", stmt).group().strip(" =")
-
-				#gets the variable value
-				var_value = int(re.search("=\s*(0|([1-9]\d*))", stmt).group().strip("= "))
-				
-				#gets target value
-				target = int(re.search("to\s*(0|([1-9]\d*))", stmt).group().strip("to "))
-				
-				stmtCount = self.forLoop(var_name, var_value, target, stmts[index + 1:]) 
-				index += stmtCount 	# move stmtCount lines down to get past the end of the loop
-			
+			if re.match(self.REGEX_FOR, stmt):
+				# the forLoop method will execute all statements from the current position to the
+				# end as long as it doesn't reach an 'end' statement
+				stmtCount = self.forLoop(stmt, stmts[index + 1:])
 			elif stmt == "":
 				pass
 			else:
-				print stmt, " is an unknown command"
-				return
-			
-			index = index + 1
+				try:	
+					eval(self.get_stmt(stmt))
+				except:
+					#raise
+					print stmt, " is an unknown command"
+					return
+				
+			index += stmtCount
 	
-	def forLoop(self, var_name, value, to, stmts):
-		# this will be returned to know how many statements were included in the loop
-		stmtCount = 0
+	def get_stmt(self, stmt):
+		if not re.match("[a-z]*\(", stmt):
+			stmt = stmt.replace(" ", "_")
 		
-		#executes all statements the requested # of times
-		for index in xrange(value, to):			
-			new_statements = []		#to be sent to doStatements
-			stmtCount = 0  			# reset because it's the inner for loop that will do the counting
+		if not re.match(".*\(", stmt):
+			stmt += "()"
+		
+		return "self." + stmt
+	
+	def forLoop(self, stmt, stmts):
+		# gets the variable name
+		var_name = re.search("[a-zA-Z]+\s*=", stmt).group().strip(" =")
+
+		# gets the variable value
+		var_value = int(re.search("=\s*(0|([1-9]\d*))", stmt).group().strip("= "))
+		
+		# gets target value
+		target = int(re.search("to\s*(0|([1-9]\d*))", stmt).group().strip("to "))
+				
+		for index in xrange(var_value, target):
+			stmtCount = 1  		# reset because it's the inner for loop that will do the counting
 			
 			for stmt in stmts:
 				stmtCount += 1
@@ -97,11 +84,9 @@ class program(JythonTranslater.Jtrans):
 				if stmt == "end":
 					break
 				
-				#replaces variables with a value
-				new_statements.append(stmt.replace(var_name, str(index)))
+				stmt = stmt.replace(var_name, str(index))
+				eval(self.get_stmt(stmt))
 				
-			self.doStatements(new_statements)
-			
 		return stmtCount
 	
 	def move(self, steps, angle):
@@ -125,17 +110,17 @@ class program(JythonTranslater.Jtrans):
 		self.pen_pos_x += steps * delta_x
 		self.pen_pos_y += steps * delta_y
 		
-	def moveBackward(self):
+	def move_backward(self):
 		self.move(1, 180)
 		self.turnCW(180)
 		
-	def moveForward(self):
+	def move_forward(self):
 		self.move(1, 0)
 	
-	def penDown(self):
+	def pen_down(self):
 		self.pen_down = True
 		
-	def penUp(self):
+	def pen_up(self):
 		self.pen_down = False
 
 	def put(self, xpos, ypos, angle):
@@ -152,10 +137,10 @@ class program(JythonTranslater.Jtrans):
 	def setDYPL( self, obj ):
 		self.dypl = obj
 	
-	def turnCW(self, angle):
+	def turn_cw(self, angle):
 		self.pen_angle += angle
 		
-	def turnCCW(self, angle):
+	def turn_ccw(self, angle):
 		self.pen_angle -= angle
 		
 if __name__ == '__main__':
