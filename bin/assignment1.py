@@ -60,6 +60,7 @@ class program(JythonTranslater.Jtrans):
 		if not re.match("[a-z]*\(", stmt):
 			stmt = stmt.replace(" ", "_")
 		
+		# if "pen_down", "pen_up", "move_forward" or "move_backward", add parentheses to be able to call method
 		if not re.match(".*\(", stmt):
 			stmt += "()"
 		
